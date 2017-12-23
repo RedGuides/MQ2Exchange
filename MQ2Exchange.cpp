@@ -54,7 +54,7 @@ bool CheckValidExchange(CItemLocation* pValidate, long lDestSlot)
     PITEMINFO pitemSwapIn  = GetItemFromContents(pValidate->pItem);
 
     // if non-bard casting, fail
-	if (NonBardCasting()) {
+   if (NonBardCasting()) {
         MacroError("Exchange: Cannot /exchange while casting");
         return false;
     }
@@ -85,7 +85,7 @@ bool CheckValidExchange(CItemLocation* pValidate, long lDestSlot)
     }
 
     // if the destination is primary, and there is something in the secondary, and the item being moved is type 2H
-	if (lDestSlot == 0xd && GetCharInfo2()->pInventoryArray->InventoryArray[0xe] && ((pitemSwapIn->ItemType == 0x1) || (pitemSwapIn->ItemType == 0x4))) { // 1&4 = 2h items.  missing 35?
+   if (lDestSlot == 0xd && GetCharInfo2()->pInventoryArray->InventoryArray[0xe] && ((pitemSwapIn->ItemType == 0x1) || (pitemSwapIn->ItemType == 0x4))) { // 1&4 = 2h items.  missing 35?
         WriteChatf("Exchange: Cannot equip %s when %s is in the offhand slot", pitemSwapIn->Name, GetItemFromContents(GetCharInfo2()->pInventoryArray->InventoryArray[0xe])->Name);
         return false;
     }
@@ -182,21 +182,21 @@ void ExchangeCmd(PSPAWNINFO pLPlayer, char* szLine)
     }
 
     // pick up the item to move
-	if (cItem.BagSlot != 0xFFFF) {
-        Execute("/shiftkey /itemnotify in %s %d leftmouseup",szItemSlot[cItem.InvSlot],cItem.BagSlot+1);
-	} else {
-        Execute("/shiftkey /itemnotify %s leftmouseup",szItemSlot[cItem.InvSlot]);
-	}
+   if (cItem.BagSlot != 0xFFFF) {
+        Execute("/nomodkey /shiftkey /itemnotify in %s %d leftmouseup",szItemSlot[cItem.InvSlot],cItem.BagSlot+1);
+   } else {
+        Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup",szItemSlot[cItem.InvSlot]);
+   }
 
     // swap item with worn slot
-	Execute("/shiftkey /itemnotify %s leftmouseup",szItemSlot[lSFSlot]);
+   Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup",szItemSlot[lSFSlot]);
 
     // place the item on cursor into the old item's place
-	if (cItem.BagSlot != 0xFFFF ) {
-        Execute("/shiftkey /itemnotify in %s %d leftmouseup",szItemSlot[cItem.InvSlot],cItem.BagSlot+1);
-	} else {
-        Execute("/shiftkey /itemnotify %s leftmouseup",szItemSlot[cItem.InvSlot]);
-	}
+   if (cItem.BagSlot != 0xFFFF ) {
+        Execute("/nomodkey /shiftkey /itemnotify in %s %d leftmouseup",szItemSlot[cItem.InvSlot],cItem.BagSlot+1);
+   } else {
+        Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup",szItemSlot[cItem.InvSlot]);
+   }
 }
 
 void UnequipCmd(PSPAWNINFO pLPlayer, char* szLine)
@@ -240,21 +240,21 @@ void UnequipCmd(PSPAWNINFO pLPlayer, char* szLine)
         return;
     }
 
-    // we have found a place to remove to, move the item
+   // we have found a place to remove to, move the item
     // pick the item up off of the slot
-	Execute("/shiftkey /itemnotify %s leftmouseup",szItemSlot[lSFSlot]);
+   Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup",szItemSlot[lSFSlot]);
 
     // put it in desired place
 	if (cFreeSlot.BagSlot != 0xFFFF ) {
-        Execute("/shiftkey /itemnotify in %s %d leftmouseup",szItemSlot[cFreeSlot.InvSlot],cFreeSlot.BagSlot+1);
+        Execute("/nomodkey /shiftkey /itemnotify in %s %d leftmouseup",szItemSlot[cFreeSlot.InvSlot],cFreeSlot.BagSlot+1);
 	} else {
-        Execute("/shiftkey /itemnotify %s leftmouseup",szItemSlot[cFreeSlot.InvSlot]);
+        Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup",szItemSlot[cFreeSlot.InvSlot]);
 	}
 }
 
 PLUGIN_API void SetGameState(unsigned long ulGameState)
 {
-	if (GetGameState() != GAMESTATE_INGAME) {
+   if (GetGameState() != GAMESTATE_INGAME) {
         bPendingEx = bPendingUn = false;
         ulTimer = 0;
     }

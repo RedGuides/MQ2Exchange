@@ -7,14 +7,13 @@
 // 4.0 - Eqmule 07-22-2016 - Added string safety.
 /******************************************************************/
 
-#include "../MQ2Plugin.h"
-#include "../moveitem2.h"
+#include <mq/Plugin.h>
+#include <moveitem.h>
 
 const char*  PLUGIN_NAME = "MQ2Exchange";
-const double PLUGIN_VER  = 4.0;
+PLUGIN_VERSION(4.0);
 
 PreSetup(PLUGIN_NAME);
-PLUGIN_VERSION(PLUGIN_VER);
 
 bool bPendingEx                 = false;
 bool bPendingUn                 = false;
@@ -34,8 +33,7 @@ void Help()
 void List()
 {
     WriteChatf("\ay%s Item Slots\ax: ", PLUGIN_NAME);
-    int i = 0;
-    for (i = 0; szItemSlot[i]; i++) {
+    for (int i = 0; szItemSlot[i]; ++i) {
         WriteChatf("%s | %d", szItemSlot[i], i);
     }
 }
@@ -43,13 +41,14 @@ void List()
 void Execute(PCHAR zFormat, ...)
 {
     char zOutput[MAX_STRING]={0}; va_list vaList; va_start(vaList,zFormat);
-    vsprintf_s(zOutput,zFormat,vaList); if(!zOutput[0]) return;
+    vsprintf_s(zOutput,zFormat,vaList);
+	if(!zOutput[0]) return;
     DoCommand(GetCharInfo()->pSpawn,zOutput);
 }
 
 bool CheckValidExchange(CItemLocation* pValidate, long lDestSlot)
 {
-    PCONTENTS pcontBagSlot = pValidate->pBagSlot;
+    CONTENTS* pcontBagSlot = pValidate->pBagSlot;
     PITEMINFO pitemBagSlot = GetItemFromContents(pValidate->pBagSlot);
     PITEMINFO pitemSwapIn  = GetItemFromContents(pValidate->pItem);
 
@@ -64,9 +63,9 @@ bool CheckValidExchange(CItemLocation* pValidate, long lDestSlot)
 
 
     // if the slot contains a bag
-    if (TypePack(pcontBagSlot) && GetCharInfo2()->pInventoryArray && GetCharInfo2()->pInventoryArray->InventoryArray[lDestSlot]) {
+    if (TypePack(pcontBagSlot) && GetPcProfile()->pInventoryArray && GetPcProfile()->pInventoryArray->InventoryArray[lDestSlot]) {
         // check if item size is too large for that bag
-        PITEMINFO pDestSlot = GetItemFromContents(GetCharInfo2()->pInventoryArray->InventoryArray[lDestSlot]);
+        PITEMINFO pDestSlot = GetItemFromContents(GetPcProfile()->pInventoryArray->InventoryArray[lDestSlot]);
         if (pDestSlot && pitemBagSlot && pDestSlot->Size > pitemBagSlot->SizeCapacity) {
             MacroError("Exchange: %s is too large to fit in %s", pDestSlot->Name, pitemBagSlot->Name);
             return false;
@@ -85,19 +84,19 @@ bool CheckValidExchange(CItemLocation* pValidate, long lDestSlot)
     }
 
     // if the destination is primary, and there is something in the secondary, and the item being moved is type 2H
-   if (lDestSlot == 0xd && GetCharInfo2()->pInventoryArray->InventoryArray[0xe] && ((pitemSwapIn->ItemType == 0x1) || (pitemSwapIn->ItemType == 0x4))) { // 1&4 = 2h items.  missing 35?
-        WriteChatf("Exchange: Cannot equip %s when %s is in the offhand slot", pitemSwapIn->Name, GetItemFromContents(GetCharInfo2()->pInventoryArray->InventoryArray[0xe])->Name);
+   if (lDestSlot == 0xd && GetPcProfile()->pInventoryArray->InventoryArray[0xe] && ((pitemSwapIn->ItemType == 0x1) || (pitemSwapIn->ItemType == 0x4))) { // 1&4 = 2h items.  missing 35?
+        WriteChatf("Exchange: Cannot equip %s when %s is in the offhand slot", pitemSwapIn->Name, GetItemFromContents(GetPcProfile()->pInventoryArray->InventoryArray[0xe])->Name);
         return false;
     }
 
     // if our class cannot use this item
-    if (!(pitemSwapIn->Classes&(1 << ((GetCharInfo2()->Class) - 1)))) {
+    if (!(pitemSwapIn->Classes&(1 << ((GetPcProfile()->Class) - 1)))) {
         MacroError("Exchange: Cannot equip %s. Class restriction.", pitemSwapIn->Name);
         //return false;
     }
 
     // if our race cannot use this item
-    unsigned long myRace = GetCharInfo2()->Race;
+    unsigned long myRace = GetPcProfile()->Race;
     switch(myRace) {
         case 0x80:
            myRace=0xc;
@@ -125,7 +124,7 @@ bool CheckValidExchange(CItemLocation* pValidate, long lDestSlot)
     }*/
 
     // if our deity is incorrect
-    unsigned long Deity = GetCharInfo2()->Deity - 200;
+    unsigned long Deity = GetPcProfile()->Deity - 200;
     if ((pitemSwapIn->Diety != 0) && !(pitemSwapIn->Diety&(1 << Deity))) {
         MacroError("Exchange: Cannot equip %s. Deity restriction.", pitemSwapIn->Name);
         return false;
@@ -227,7 +226,7 @@ void UnequipCmd(PSPAWNINFO pLPlayer, char* szLine)
         return;
     }
 
-    PCONTENTS pUnequipSlot = GetCharInfo2()->pInventoryArray->InventoryArray[lSFSlot];
+    CONTENTS* pUnequipSlot = GetPcProfile()->pInventoryArray->InventoryArray[lSFSlot];
     if (!pUnequipSlot) {
         MacroError("Unequip: There is nothing in the %s slot to unequip", szLine);
         return;
@@ -262,7 +261,7 @@ PLUGIN_API void SetGameState(unsigned long ulGameState)
 
 PLUGIN_API void ExchangeDelayedCmd(PSPAWNINFO pLPlayer, char* szLine)
 {
-    if (!GetCharInfo2()) return;
+    if (!GetPcProfile()) return;
 
     char szArg1[MAX_STRING] = {0};
     char szArg2[MAX_STRING] = {0};
@@ -285,7 +284,7 @@ PLUGIN_API void ExchangeDelayedCmd(PSPAWNINFO pLPlayer, char* szLine)
 
 void UnequipDelayedCmd(PSPAWNINFO pLPlayer, char* szLine)
 {
-    if (!GetCharInfo2()) return;
+    if (!GetPcProfile()) return;
 
     char szArg1[MAX_STRING] = {0};
     char szArg2[MAX_STRING] = {0};

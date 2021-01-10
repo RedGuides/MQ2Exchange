@@ -59,13 +59,12 @@ bool CheckValidExchange(CItemLocation* pValidate, long lDestSlot)
     }
 
     // if moving something to main inventory slots, no other checks required
-    if (lDestSlot >= BAG_SLOT_START && lDestSlot < NUM_INV_SLOTS) return true;
-
+    if (lDestSlot >= InvSlot_FirstBagSlot && lDestSlot <= InvSlot_LastBagSlot) return true;
 
     // if the slot contains a bag
-    if (TypePack(pcontBagSlot) && GetPcProfile()->pInventoryArray && GetPcProfile()->pInventoryArray->InventoryArray[lDestSlot]) {
+    if (TypePack(pcontBagSlot)) {
         // check if item size is too large for that bag
-        PITEMINFO pDestSlot = GetItemFromContents(GetPcProfile()->pInventoryArray->InventoryArray[lDestSlot]);
+        PITEMINFO pDestSlot = GetItemFromContents(GetPcProfile()->GetInventorySlot(lDestSlot));
         if (pDestSlot && pitemBagSlot && pDestSlot->Size > pitemBagSlot->SizeCapacity) {
             MacroError("Exchange: %s is too large to fit in %s", pDestSlot->Name, pitemBagSlot->Name);
             return false;
@@ -73,9 +72,9 @@ bool CheckValidExchange(CItemLocation* pValidate, long lDestSlot)
     }
 
     // if the destination is the AMMO slot
-    if (lDestSlot == 22) {
+    if (lDestSlot == InvSlot_Ammo) {
         // verify the item being exchanged is ammo-usable
-        if ((pitemSwapIn->EquipSlots&(1 << 11)) || (pitemSwapIn->EquipSlots&(1 << 22))) {
+        if ((pitemSwapIn->EquipSlots&(1 << InvSlot_Range)) || (pitemSwapIn->EquipSlots&(1 << InvSlot_Ammo))) {
             return true;
         } else {
             MacroError("Exchange: Cannot equip %s in the ammo slot.", pitemSwapIn->Name);
@@ -84,7 +83,8 @@ bool CheckValidExchange(CItemLocation* pValidate, long lDestSlot)
     }
 
     // if the destination is primary, and there is something in the secondary, and the item being moved is type 2H
-   if (lDestSlot == 0xd && GetPcProfile()->pInventoryArray->InventoryArray[0xe] && ((pitemSwapIn->ItemType == 0x1) || (pitemSwapIn->ItemType == 0x4))) { // 1&4 = 2h items.  missing 35?
+   if (lDestSlot == InvSlot_Primary && GetPcProfile()->GetInventorySlot(InvSlot_Primary)
+	   && ((pitemSwapIn->ItemType == ItemClass_2HSlashing) || (pitemSwapIn->ItemType == ItemClass_2HBlunt) || (pitemSwapIn->ItemType == ItemClass_2HPiercing))) {
         WriteChatf("Exchange: Cannot equip %s when %s is in the offhand slot", pitemSwapIn->Name, GetItemFromContents(GetPcProfile()->pInventoryArray->InventoryArray[0xe])->Name);
         return false;
     }
@@ -226,7 +226,7 @@ void UnequipCmd(PSPAWNINFO pLPlayer, char* szLine)
         return;
     }
 
-    CONTENTS* pUnequipSlot = GetPcProfile()->pInventoryArray->InventoryArray[lSFSlot];
+    CONTENTS* pUnequipSlot = GetPcProfile()->GetInventorySlot(lSFSlot);
     if (!pUnequipSlot) {
         MacroError("Unequip: There is nothing in the %s slot to unequip", szLine);
         return;

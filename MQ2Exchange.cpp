@@ -85,7 +85,7 @@ bool CheckValidExchange(CItemLocation* pValidate, long lDestSlot)
     // if the destination is primary, and there is something in the secondary, and the item being moved is type 2H
    if (lDestSlot == InvSlot_Primary && GetPcProfile()->GetInventorySlot(InvSlot_Primary)
 	   && ((pitemSwapIn->ItemType == ItemClass_2HSlashing) || (pitemSwapIn->ItemType == ItemClass_2HBlunt) || (pitemSwapIn->ItemType == ItemClass_2HPiercing))) {
-        WriteChatf("Exchange: Cannot equip %s when %s is in the offhand slot", pitemSwapIn->Name, GetItemFromContents(GetPcProfile()->pInventoryArray->InventoryArray[0xe])->Name);
+        WriteChatf("Exchange: Cannot equip %s when %s is in the offhand slot", pitemSwapIn->Name, GetPcProfile()->GetInventorySlot(InvSlot_Secondary)->GetName());
         return false;
     }
 

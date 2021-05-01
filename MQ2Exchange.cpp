@@ -259,6 +259,7 @@ PLUGIN_API void SetGameState(unsigned long ulGameState)
     }
 }
 
+// FIXME:  The ExchangeDelayedCmd and UnequipDelayedCmd are identical except for the ExchangeCmd/UnequipCmd
 PLUGIN_API void ExchangeDelayedCmd(PSPAWNINFO pLPlayer, char* szLine)
 {
     if (!GetPcProfile()) return;
@@ -271,10 +272,12 @@ PLUGIN_API void ExchangeDelayedCmd(PSPAWNINFO pLPlayer, char* szLine)
     if (!_strnicmp(szArg1, "list", 4) || !_strnicmp(szArg2, "list", 4)) {
         List();
         return;
-    } else if (!_strnicmp(szArg1, "help", 4)) {
+    }
+	if (!_strnicmp(szArg1, "help", 4)) {
         Help();
         return;
-    } else if (CursorHasItem()) {
+    }
+	if (ItemOnCursor()) {
         MacroError("Exchange: Your mouse pointer must be clear to move an item.");
         return;
     }
@@ -294,10 +297,12 @@ void UnequipDelayedCmd(PSPAWNINFO pLPlayer, char* szLine)
     if (!_strnicmp(szArg1, "list", 4) || !_strnicmp(szArg2, "list", 4)) {
         List();
         return;
-    } else if (!_strnicmp(szArg1, "help", 4)) {
+    }
+	if (!_strnicmp(szArg1, "help", 4)) {
         Help();
         return;
-    } else if (CursorHasItem()) {
+    }
+	if (ItemOnCursor()) {
         MacroError("Exchange: Your mouse pointer must be clear to move an item.");
         return;
     }

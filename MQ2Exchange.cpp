@@ -40,9 +40,12 @@ void List()
 
 void Execute(PCHAR zFormat, ...)
 {
-	char zOutput[MAX_STRING]={0}; va_list vaList; va_start(vaList,zFormat);
-	vsprintf_s(zOutput,zFormat,vaList);
-	if(!zOutput[0]) return;
+	char zOutput[MAX_STRING]= { 0 };
+	va_list vaList;
+	va_start(vaList, zFormat);
+	vsprintf_s(zOutput, zFormat, vaList);
+	if(!zOutput[0])
+		return;
 	DoCommand(GetCharInfo()->pSpawn,zOutput);
 }
 
@@ -180,18 +183,18 @@ void ExchangeCmd(PSPAWNINFO pLPlayer, char* szLine)
 	}
 
 	// pick up the item to move
-	if (cItem.BagSlot != 0xFFFF) {
-		Execute("/nomodkey /shiftkey /itemnotify in %s %d leftmouseup",szItemSlot[cItem.InvSlot],cItem.BagSlot+1);
+	if (cItem.BagSlot != INVALID_PACK) {
+		Execute("/nomodkey /shiftkey /itemnotify in %s %d leftmouseup", szItemSlot[cItem.InvSlot], cItem.BagSlot+1);
 	} else {
-		Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup",szItemSlot[cItem.InvSlot]);
+		Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup", szItemSlot[cItem.InvSlot]);
 	}
 
 	// swap item with worn slot
-	Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup",szItemSlot[lSFSlot]);
+	Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup", szItemSlot[lSFSlot]);
 
 	// place the item on cursor into the old item's place
-	if (cItem.BagSlot != 0xFFFF ) {
-		Execute("/nomodkey /shiftkey /itemnotify in %s %d leftmouseup",szItemSlot[cItem.InvSlot],cItem.BagSlot+1);
+	if (cItem.BagSlot != INVALID_PACK) {
+		Execute("/nomodkey /shiftkey /itemnotify in %s %d leftmouseup", szItemSlot[cItem.InvSlot], cItem.BagSlot+1);
 	} else {
 		Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup",szItemSlot[cItem.InvSlot]);
 	}
@@ -240,13 +243,13 @@ void UnequipCmd(PSPAWNINFO pLPlayer, char* szLine)
 
 	// we have found a place to remove to, move the item
 	// pick the item up off of the slot
-	Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup",szItemSlot[lSFSlot]);
+	Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup", szItemSlot[lSFSlot]);
 
 	// put it in desired place
-	if (cFreeSlot.BagSlot != 0xFFFF ) {
-		Execute("/nomodkey /shiftkey /itemnotify in %s %d leftmouseup",szItemSlot[cFreeSlot.InvSlot],cFreeSlot.BagSlot+1);
+	if (cFreeSlot.BagSlot != INVALID_PACK) {
+		Execute("/nomodkey /shiftkey /itemnotify in %s %d leftmouseup", szItemSlot[cFreeSlot.InvSlot], cFreeSlot.BagSlot+1);
 	} else {
-		Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup",szItemSlot[cFreeSlot.InvSlot]);
+		Execute("/nomodkey /shiftkey /itemnotify %s leftmouseup", szItemSlot[cFreeSlot.InvSlot]);
 	}
 }
 

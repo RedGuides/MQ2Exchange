@@ -127,7 +127,7 @@ bool CheckValidExchange(CItemLocation* pValidate, long lDestSlot)
 
 	// if our deity is incorrect
 	unsigned long Deity = GetPcProfile()->Deity - 200;
-	if ((pitemSwapIn->Diety != 0) && !(pitemSwapIn->Diety&(1 << Deity))) {
+	if ((pitemSwapIn->Deity != 0) && !(pitemSwapIn->Deity&(1 << Deity))) {
 		MacroError("Exchange: Cannot equip %s. Deity restriction.", pitemSwapIn->Name);
 		return false;
 	}

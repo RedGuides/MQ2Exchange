@@ -236,7 +236,7 @@ void UnequipCmd(PSPAWNINFO pLPlayer, char* szLine)
 
 	// attempt to find an open slot
 	CItemLocation cFreeSlot;
-	if (!PackFind(&cFreeSlot, pUnequipSlot)) {
+	if (!FreeItemLocationForItem(&cFreeSlot, pUnequipSlot)) {
 		WriteChatf("\ay%s\aw:: No room in any bags to unequip.", PLUGIN_NAME);
 		return;
 	}

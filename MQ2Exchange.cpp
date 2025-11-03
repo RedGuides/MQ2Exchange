@@ -38,7 +38,7 @@ void List()
 	}
 }
 
-void Execute(PCHAR zFormat, ...)
+void Execute(const char* zFormat, ...)
 {
 	char zOutput[MAX_STRING]= { 0 };
 	va_list vaList;
